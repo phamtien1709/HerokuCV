@@ -5,14 +5,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script>
       /*!
- * http://suyati.github.io/line-control
- * LineControl 1.1.0
- * Copyright (C) 2014, Suyati Technologies
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-*/
+      * http://suyati.github.io/line-control
+        * LineControl 1.1.0
+        * Copyright (C) 2014, Suyati Technologies
+        * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+        This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+        You should have received a copy of the GNU General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+        *
+      */
 
 (function ($) {
   var editorObj;
@@ -113,377 +113,6 @@ You should have received a copy of the GNU General Public License along with thi
         range.pasteHTML(text);
         range.select();
       }
-    },
-
-    imageWidget: function () {
-      //Class for Widget Handling the upload of Files
-      var _idSuffix = this.attr("id");
-      var row = $("<div/>", {
-        class: "row",
-      }).append(
-        $("<div/>", {
-          id: "imgErrMsg_" + _idSuffix,
-        })
-      );
-      var container = $("<div/>", { class: "tabbable tabs-left" });
-      var navTabs = $("<ul/>", { class: "nav nav-tabs" })
-        .append(
-          $("<li/>", { class: "active" }).append(
-            $("<a/>", {
-              href: "#uploadImageBar_" + _idSuffix,
-              "data-toggle": "tab",
-            }).html("From Computer")
-          )
-        )
-        .append(
-          $("<li/>").append(
-            $("<a/>", {
-              href: "#imageFromLinkBar_" + _idSuffix,
-              "data-toggle": "tab",
-            }).html("From URL")
-          )
-        );
-
-      var tabContent = $("<div/>", { class: "tab-content" });
-      var uploadImageBar = $("<div/>", {
-        id: "uploadImageBar_" + _idSuffix,
-        class: "tab-pane active",
-      });
-
-      handleFileSelect = function (evt) {
-        var files = evt.target.files; // FileList object
-        var output = [];
-        for (var i = 0, f; (f = files[i]); i++) {
-          //Loop thorugh all the files
-          if (
-            !f.type.match("image.*") ||
-            !f.name.match(/(?:gif|jpg|png|jpeg)$/)
-          ) {
-            //Process only Images
-            methods.showMessage.apply(this, [
-              "imgErrMsg_" + _idSuffix,
-              "Invalid file type",
-            ]);
-            continue;
-          }
-          var reader = new FileReader();
-          reader.onload = (function (imageFile) {
-            return function (e) {
-              //Render Thumnails
-              var li = $("<li/>", {
-                class: "col-xs-12 col-sm-6 col-md-3 col-lg-3",
-              });
-              var a = $("<a/>", {
-                href: "javascript:void(0)",
-                class: "thumbnail",
-              });
-              var image = $("<img/>", {
-                src: e.target.result,
-                title: escape(imageFile.name),
-              })
-                .appendTo(a)
-                .click(function () {
-                  $("#imageList_" + _idSuffix).data(
-                    "current",
-                    $(this).attr("src")
-                  );
-                });
-              li.append(a).appendTo($("#imageList_" + _idSuffix));
-            };
-          })(f);
-          reader.readAsDataURL(f);
-        }
-      };
-      var chooseFromLocal = $("<input/>", {
-        type: "file",
-        class: "inline-form-control",
-        multiple: "multiple",
-      });
-      chooseFromLocal.on("change", handleFileSelect);
-      uploadImageBar.append(chooseFromLocal);
-      var imageFromLinkBar = $("<div/>", {
-        id: "imageFromLinkBar_" + _idSuffix,
-        class: "tab-pane",
-      });
-      var getImageURL = $("<div/>", { class: "input-group" });
-      var imageURL = $("<input/>", {
-        type: "url",
-        class: "form-control",
-        id: "imageURL_" + _idSuffix,
-        placeholder: "Enter URL",
-      }).appendTo(getImageURL);
-      var getURL = $("<button/>", {
-        class: "btn btn-success",
-        type: "button",
-      })
-        .html("Go!")
-        .click(function () {
-          var url = $("#imageURL_" + _idSuffix).val();
-          if (url == "") {
-            methods.showMessage.apply(this, [
-              "imgErrMsg_" + _idSuffix,
-              "Please enter image url",
-            ]);
-            return false;
-          }
-          var li = $("<li/>", {
-            class: "span6 col-xs-12 col-sm-6 col-md-3 col-lg-3",
-          });
-          var a = $("<a/>", {
-            href: "javascript:void(0)",
-            class: "thumbnail",
-          });
-          var image = $("<img/>", {
-            src: url,
-          })
-            .error(function () {
-              methods.showMessage.apply(this, [
-                "imgErrMsg_" + _idSuffix,
-                "Invalid image url",
-              ]);
-              return false;
-            })
-            .load(function () {
-              $(this)
-                .appendTo(a)
-                .click(function () {
-                  $("#imageList_" + _idSuffix).data(
-                    "current",
-                    $(this).attr("src")
-                  );
-                });
-              li.append(a).appendTo($("#imageList_" + _idSuffix));
-            });
-        })
-        .appendTo(
-          $("<span/>", {
-            class: "input-group-btn form-control-button-right",
-          }).appendTo(getImageURL)
-        );
-
-      imageFromLinkBar.append(getImageURL);
-      tabContent.append(uploadImageBar).append(imageFromLinkBar);
-      container.append(navTabs).append(tabContent);
-
-      var imageListContainer = $("<div/>", {
-        class: "col-xs-12 col-sm-12 col-md-12 col-lg-12",
-      });
-      var imageList = $("<ul/>", {
-        class: "thumbnails padding-top list-unstyled",
-        id: "imageList_" + _idSuffix,
-      }).appendTo(imageListContainer);
-      row.append(container).append(imageListContainer);
-      return row;
-    },
-
-    tableWidget: function (mode) {
-      //Function to generate the table input form
-      var idExtn = "_" + $(this).attr("id");
-      if (typeof mode !== "undefined") {
-        idExtn = "_" + editorObj.attr("id") + "_Edt";
-      }
-      var tblCntr = $("<div/>", {
-        //Outer Container Div
-        class: "row-fluid",
-      })
-        .append(
-          $("<div/>", {
-            //Err Message Div
-            id: "tblErrMsg" + idExtn,
-          })
-        )
-        .append(
-          $("<form/>", {
-            //Form
-            id: "tblForm" + idExtn,
-          }).append(
-            $("<div/>", {
-              //Inner Container Div
-              class: "row",
-            })
-              .append(
-                $("<div/>", {
-                  //Left input Container Div
-                  id: "tblInputsLeft" + idExtn,
-                  class: "col-xs-12 col-sm-6 col-md-6 col-lg-6",
-                })
-                  .append(
-                    $("<label/>", { for: "tblRows" + idExtn, text: "Rows" })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblRows" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 2,
-                    })
-                  )
-                  .append(
-                    $("<label/>", {
-                      for: "tblColumns" + idExtn,
-                      text: "Columns",
-                    })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblColumns" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 2,
-                    })
-                  )
-                  .append(
-                    $("<label/>", { for: "tblWidth" + idExtn, text: "Width" })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblWidth" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 400,
-                    })
-                  )
-                  .append(
-                    $("<label/>", { for: "tblHeight" + idExtn, text: "Height" })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblHeight" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                    })
-                  )
-              )
-              .append(
-                $("<div/>", {
-                  //Right input Container Div
-                  id: "tblInputsRight" + idExtn,
-                  class: "col-xs-12 col-sm-6 col-md-6 col-lg-6",
-                })
-                  .append(
-                    $("<label/>", {
-                      for: "tblAlign" + idExtn,
-                      text: "Alignment",
-                    })
-                  )
-                  .append(
-                    $("<select/>", {
-                      id: "tblAlign" + idExtn,
-                      class: "form-control form-control-width",
-                    })
-                      .append($("<option/>", { text: "Choose", value: "" }))
-                      .append($("<option/>", { text: "Left", value: "left" }))
-                      .append(
-                        $("<option/>", { text: "Center", value: "center" })
-                      )
-                      .append($("<option/>", { text: "Right", value: "right" }))
-                  )
-                  .append(
-                    $("<label/>", {
-                      for: "tblBorder" + idExtn,
-                      text: "Border size",
-                    })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblBorder" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 1,
-                    })
-                  )
-                  .append(
-                    $("<label/>", {
-                      for: "tblCellspacing" + idExtn,
-                      text: "Cell spacing",
-                    })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblCellspacing" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 1,
-                    })
-                  )
-                  .append(
-                    $("<label/>", {
-                      for: "tblCellpadding" + idExtn,
-                      text: "Cell padding",
-                    })
-                  )
-                  .append(
-                    $("<input/>", {
-                      id: "tblCellpadding" + idExtn,
-                      type: "text",
-                      class: "form-control form-control-width",
-                      value: 1,
-                    })
-                  )
-              )
-          )
-        );
-      return tblCntr;
-    },
-
-    imageAttributeWidget: function () {
-      var edtTablecntr = $("<div/>", {
-        class: "row-fluid",
-      })
-        .append(
-          $("<div/>", {
-            //Err Message Div
-            id: "imageErrMsg",
-          })
-        )
-        .append(
-          $("<input/>", {
-            id: "imgAlt",
-            type: "text",
-            class: "form-control form-control-link ",
-            placeholder: "Alt Text",
-          })
-        )
-        .append(
-          $("<input/>", {
-            id: "imgTarget",
-            class: "form-control form-control-link ",
-            type: "text",
-            placeholder: "Link Target",
-          })
-        )
-        .append(
-          $("<input/>", {
-            id: "imgHidden",
-            type: "hidden",
-          })
-        );
-
-      return edtTablecntr;
-    },
-
-    getHTMLTable: function (tblRows, tblColumns, attributes) {
-      //Function to generate html table. Supplied arguments: tablerows-no.of rows, no.of columns, table attributes.
-      var tableElement = $("<table/>", { class: "table" });
-      for (var i = 0; i < attributes.length; i++) {
-        if (attributes[i].value != "") {
-          if (
-            attributes[i].attribute == "width" ||
-            attributes[i].attribute == "height"
-          )
-            tableElement.css(attributes[i].attribute, attributes[i].value);
-          else tableElement.attr(attributes[i].attribute, attributes[i].value);
-        }
-      }
-      for (var i = 1; i <= tblRows; i++) {
-        var tblRow = $("<tr/>");
-        for (var j = 1; j <= tblColumns; j++) {
-          var tblColumn = $("<td/>").html("&nbsp;");
-          tblColumn.appendTo(tblRow);
-        }
-        tblRow.appendTo(tableElement);
-      }
-      return tableElement;
     },
 
     init: function (options) {
@@ -824,7 +453,7 @@ You should have received a copy of the GNU General Public License along with thi
         var menuWrapElement = $("<div/>", { class: "btn-group" });
         var menuElement = $("<ul/>", { class: "dropdown-menu" });
         menuWrapElement.append(
-          $("<a/>", {
+          $("</>", {
             class: "btn btn-default dropdown-toggle",
             "data-toggle": "dropdown",
             href: "javascript:void(0)",
@@ -904,7 +533,6 @@ You should have received a copy of the GNU General Public License along with thi
         });
       }
       menuWrapElement.attr("title", itemSettings["tooltip"]);
-      menuWrapElement.css("cursor", "pointer");
       menuWrapElement.append(menuElement);
       if (returnElement) return menuWrapElement;
       $(this).data("menuBar").append(menuWrapElement);
@@ -987,27 +615,6 @@ You should have received a copy of the GNU General Public License along with thi
       return count;
     },
 
-    getWordCount: function () {
-      //Function to return the word count of the text in the editor
-      return methods.countWords.apply(this, [$(this).data("editor")]);
-    },
-
-    getCharCount: function () {
-      //Function to return the character count of the text in the editor
-      return methods.countChars.apply(this, [$(this).data("editor")]);
-    },
-
-    rgbToHex: function (rgb) {
-      //Function to convert the rgb color codes into hexadecimal code
-      rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-      return (
-        "#" +
-        ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-        ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-        ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2)
-      );
-    },
-
     showMessage: function (target, message) {
       //Function to show the error message. Supplied arguments:target-div id, message-message text to be displayed.
       var errorDiv = $("<div/>", { class: "alert alert-danger" })
@@ -1080,10 +687,10 @@ You should have received a copy of the GNU General Public License along with thi
     </script>
     <style>
       /*!
- * Bootstrap v3.3.5 (http://getbootstrap.com)
- * Copyright 2011-2015 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */ /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+      * Bootstrap v3.3.5 (http://getbootstrap.com)
+      * Copyright 2011-2015 Twitter, Inc.
+      * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+      */ /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
       html {
         font-family: sans-serif;
         -webkit-text-size-adjust: 100%;
@@ -4237,7 +3844,7 @@ You should have received a copy of the GNU General Public License along with thi
       .btn-default {
         color: #333;
         background-color: #fff;
-        border-color: #ccc;
+        border-color: #fff;
       }
       .btn-default.focus,
       .btn-default:focus {
@@ -4246,9 +3853,6 @@ You should have received a copy of the GNU General Public License along with thi
         border-color: #8c8c8c;
       }
       .btn-default:hover {
-        color: #333;
-        background-color: #e6e6e6;
-        border-color: #adadad;
       }
       .btn-default.active,
       .btn-default:active,
@@ -10533,27 +10137,7 @@ You should have received a copy of the GNU General Public License along with thi
 
       .line-control-menu-bar {
         background-color: #f5f5f5;
-        *background-color: #e6e6e6;
-        background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-        background-image: -webkit-gradient(
-          linear,
-          0 0,
-          0 100%,
-          from(#ffffff),
-          to(#e6e6e6)
-        );
-        background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-        background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-        background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-        background-repeat: repeat-x;
         border: 1px solid #cccccc;
-        *border: 0;
-        border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-        border-bottom-color: #b3b3b3;
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
-        filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-        *zoom: 1;
       }
       .line-control-status-bar {
         background-color: #f5f5f5;
@@ -10582,7 +10166,6 @@ You should have received a copy of the GNU General Public License along with thi
 
       .line-control-menu-bar {
         border-radius: 3px 3px 0 0;
-        border-bottom: none;
         min-height: 25px;
         padding: 5px 0;
       }
@@ -10935,6 +10518,16 @@ You should have received a copy of the GNU General Public License along with thi
           }
         }
       })
+      // for ANDROID
+      // document.addEventListener("message", event => {
+      //   if (typeof event.data === "string"){
+      //     if(event.data == 'GET'){
+      //       window.ReactNativeWebView.postMessage($("#txtEditor").Editor("getText"));
+      //     } else {
+      //       $("#txtEditor").Editor("setText", event.data.substring(4));
+      //     }
+      //   }
+      // })
     </script>
   </body>
 </html>
